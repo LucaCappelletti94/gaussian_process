@@ -50,7 +50,7 @@ space = Space({
                 "activation":("relu", "selu")
             },
             {
-                "units":(8,16,32),
+                "units":[8,16,32],
                 "activation":("relu", "selu")
             }],
             "dropout_rate":[0.0,1.0]
@@ -64,7 +64,12 @@ space = Space({
 def test_gaussian_process():
     set_seed(42)
     gp = GaussianProcess(score, space)
-    n_calls = 5
+    n_calls = 3
+    results = gp.maximize(
+        n_calls=n_calls,
+        n_random_starts=1,
+        callback=[TQDMGaussianProcess(n_calls=n_calls)]
+    )
     results = gp.maximize(
         n_calls=n_calls,
         n_random_starts=1,
