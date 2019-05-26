@@ -1,0 +1,35 @@
+dist: trusty
+sudo: false
+git:
+  depth: false
+env:
+  global:
+    - CC_TEST_REPORTER_ID=53eef44d00d3465aeaf806ea310cfc5497e7473d13ae05fbc753890c39712c60
+addons:
+  sonarcloud:
+    organization: "lucacappelletti94-github"
+    token:
+      secure: "rh5RVaVpJZAtVnzZIqdDEJ2tGGkBYw5/mhdIfzbyjvC99Zmti5nGNLxOed4M8z9+yS2KzKWUcHZJbuAdbC7aep/kreahVdUbOax1wVtKUQIX5Cc0Fjk2e49yaLRvr+57W2vw7Au9HhZ/8+XgjiDtSv0Bud/j2/yfdtHTJiZLCGvnww11DqJBeUFNAr3vUhArGOLNVH/efYK8D5Qf/cnlfEkLkIaa7sg/LzzdabQ1m+cvtgKxnktJSjYgdyLZ6ZZRyMKJ1oJoHOQGeKn0dyDMh6f3Z6RRkrPWGr1RBeU+FA5TWVSpcFV8VGwsB/y8ARG0i5mdGwD7o4LBz4PMfzLuW2p3k5x+VfLl6ygsdZ9gd5Xqsab8B53GyDUXGSUi6gncPEidFfVjUjNoB0ttr/O7Dk4zTlLLJBGCq3t3lK7NKBbhsTDVYjeE/acEQg5v2p038/Tjp6Gb7CJrQ8gFVH1B5L5HXs6xeyoFjRqWbiXkjWErtfNFFTP1SP/0v0bkaoUkRFgn1I9ZDZtiNoZn0iLgoqetEBPq86xj/QoWp0toaJ25J3L2K5YcdKMBOBBYQYYYmu5WbCVT6gVacK9PTlhupdSHM5F9/3JNv+A7+t6+BTEIStOobckld3bxzI2lcIlgXEqwviREzY7yk+qYORbFvyY6UVbGRVes8JUuvyCAP5k="
+language: python
+python:
+- '3.6'
+before_install:
+  - pip install --upgrade pytest
+install:
+- pip install .[test]
+before_script:
+  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+  - chmod +x ./cc-test-reporter
+  - ./cc-test-reporter before-build
+after_script:
+  - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
+script:
+- rm -rf .coverage
+- coverage erase
+- pytest --cov=holdouts_generator --cov-report xml:coverage.xml 
+- coverage report
+- coverage xml
+- sonar-scanner
+
+after_success:
+  - coveralls
