@@ -80,6 +80,6 @@ setup(
     # requirements files see:
     # https://packaging.python.org/en/latest/requirements.html
     tests_require=test_deps,
-    install_requires=["sklearn", "auto_tqdm", "pandas"],
+    install_requires=["sklearn", "auto_tqdm", "pandas", "scikit-optimize"],
     extras_require=extras,
 )
