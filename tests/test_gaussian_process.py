@@ -70,6 +70,6 @@ def test_gaussian_process():
         n_random_starts=1,
         callback=[tqdm_gp(n_calls=n_calls)]
     )
-    pprint(gp.best_parameters)
-    pprint(gp.best_optimized_parameters)
+    print(gp.best_parameters)
+    print(gp.best_optimized_parameters)
     gp.clear_cache()
