@@ -1,3 +1,3 @@
-from .tqdm_gp import tqdm_gp
+from .tqdm_gp import TQDMGaussianProcess
 
-__all__ = ["tqdm_gp"]
+__all__ = ["TQDMGaussianProcess"]

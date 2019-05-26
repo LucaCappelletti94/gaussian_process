@@ -6,7 +6,7 @@ from extra_keras_utils import set_seed
 from typing import List, Callable, Dict
 import numpy as np
 from holdouts_generator import holdouts_generator, random_holdouts
-from gaussian_process import tqdm_gp, Space, GaussianProcess
+from gaussian_process import TQDMGaussianProcess, Space, GaussianProcess
 from pprint import pprint
 
 
@@ -68,7 +68,7 @@ def test_gaussian_process():
     results = gp.maximize(
         n_calls=n_calls,
         n_random_starts=1,
-        callback=[tqdm_gp(n_calls=n_calls)]
+        callback=[TQDMGaussianProcess(n_calls=n_calls)]
     )
     print(gp.best_parameters)
     print(gp.best_optimized_parameters)
