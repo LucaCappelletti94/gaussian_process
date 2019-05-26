@@ -68,12 +68,14 @@ def test_gaussian_process():
     results = gp.maximize(
         n_calls=n_calls,
         n_random_starts=1,
-        callback=[TQDMGaussianProcess(n_calls=n_calls)]
+        callback=[TQDMGaussianProcess(n_calls=n_calls)],
+        random_state=42
     )
     results = gp.maximize(
         n_calls=n_calls,
         n_random_starts=1,
-        callback=[TQDMGaussianProcess(n_calls=n_calls)]
+        callback=[TQDMGaussianProcess(n_calls=n_calls)],
+        random_state=42
     )
     print(gp.best_parameters)
     print(gp.best_optimized_parameters)
