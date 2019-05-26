@@ -62,6 +62,7 @@ space = Space({
 })
 
 def test_gaussian_process():
+    set_seed(42)
     gp = GaussianProcess(score, space)
     n_calls = 5
     results = gp.maximize(

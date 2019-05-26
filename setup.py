@@ -27,16 +27,16 @@ def find_version(*file_paths):
     raise RuntimeError("Unable to find version string.")
 
 
-__version__ = find_version("holdouts_generator", "__version__.py")
+__version__ = find_version("gaussian_process", "__version__.py")
 
-test_deps = ['pytest', 'pytest-cov', 'coveralls', 'validate_version_code']
+test_deps = ['pytest', 'pytest-cov', 'coveralls', 'validate_version_code', 'keras', 'silence_tensorflow', 'extra_keras_utils', 'numpy', 'holdouts_generator']
 
 extras = {
     'test': test_deps,
 }
 
 setup(
-    name='holdouts_generator',
+    name='gaussian_process',
 
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
@@ -47,7 +47,7 @@ setup(
     long_description=long_description,
 
     # The project's main homepage.
-    url='https://github.com/LucaCappelletti94/holdouts_generator',
+    url='https://github.com/LucaCappelletti94/gaussian_process',
 
     # Author details
     author='Luca Cappelletti',
