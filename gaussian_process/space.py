@@ -2,6 +2,7 @@ from typing import Dict, Tuple, List
 from skopt.space import Categorical, Real, Integer
 from deflate_dict import inflate, deflate
 from collections import OrderedDict
+import numpy as np
 
 class Space(OrderedDict):
     def __init__(self, space:Dict, sep="____"):
@@ -58,11 +59,16 @@ class Space(OrderedDict):
     def space(self)->List:
         return self._space
 
+    def _sanitize(self, array):
+        return [
+            np.asscalar(a) if isinstance(a, np.generic) else a for a in array
+        ]
+
     def inflate(self, deflated_space:Dict)->Dict:
         return inflate({**deflated_space, **self._fixed}, sep=self._sep)
 
     def inflate_results(self, results:"OptimizeResult")->Dict:
-        return self.inflate(dict(zip(self._names, results.x)))
+        return self.inflate(dict(zip(self._names, self._sanitize(results.x))))
 
     def inflate_results_only(self, results:"OptimizeResult")->Dict:
-        return inflate(dict(zip(self._names, results.x)), sep=self._sep)
+        return inflate(dict(zip(self._names, self._sanitize(results.x))), sep=self._sep)
