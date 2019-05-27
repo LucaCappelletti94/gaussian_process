@@ -1,30 +1,27 @@
-from typing import Dict, Tuple
+from typing import Dict, Tuple, List
 from skopt.space import Categorical, Real, Integer
 from deflate_dict import inflate, deflate
+from collections import OrderedDict
 
-class Space(list):
+class Space(OrderedDict):
     def __init__(self, space:Dict, sep="____"):
-        super().__init__()
+        super().__init__(space)
         self._sep = sep
-        self._space = deflate(space, sep=self._sep)
-        self._fixed = {}
-        self._names = []
-        for name, value in self._space.items():
-            self._parse(name, value)
+        self._space = self._fixed = self._names = None
 
     def _parse_categorical(self, value:Tuple, name:str):
         if len(self._to_tuple(value))>1:
-            self.append(Categorical(self._to_tuple(value), name=name))
+            self._space.append(Categorical(self._to_tuple(value), name=name))
             self._names.append(name)
         else:
             self._fixed[name] = value
 
     def _parse_real(self, low:float, high:float, name:str):
-        self.append(Real(low=low, high=high, name=name))
+        self._space.append(Real(low=low, high=high, name=name))
         self._names.append(name)
 
     def _parse_integer(self, low:int, high:int, name:str):
-        self.append(Integer(low=low, high=high, name=name))
+        self._space.append(Integer(low=low, high=high, name=name))
         self._names.append(name)
 
     def _is_categorical(self, value)->bool:
@@ -33,9 +30,7 @@ class Space(list):
         ]))
 
     def _is_real(self, values)->bool:
-        return all([
-            isinstance(v, float) for v in values
-        ])
+        return all([isinstance(v, float) for v in values])
 
     def _to_tuple(self, value)->bool:
         if isinstance(value, tuple):
@@ -50,7 +45,18 @@ class Space(list):
         elif self._is_real(value):
             self._parse_real(*value, name=name)
         else:
-            self._parse_integer(*value, name=name)
+             self._parse_integer(*value, name=name)
+
+    def rasterize(self):
+        self._names = []
+        self._fixed = {}
+        self._space = []
+        for name, value in deflate(self, sep=self._sep).items():
+            self._parse(name, value)
+
+    @property
+    def space(self)->List:
+        return self._space
 
     def inflate(self, deflated_space:Dict)->Dict:
         return inflate({**deflated_space, **self._fixed}, sep=self._sep)

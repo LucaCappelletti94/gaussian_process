@@ -25,7 +25,7 @@ Keras model optimization using a gaussian process
     from typing import List, Callable, Dict
     import numpy as np
     from holdouts_generator import holdouts_generator, random_holdouts
-    from gaussian_process import tqdm_gp, Space, GaussianProcess
+    from gaussian_process import TQDMGaussianProcess, Space, GaussianProcess
     from pprint import pprint
 
 
@@ -53,7 +53,7 @@ Keras model optimization using a gaussian process
 
 
     def score(holdouts:Callable, model:Dict):
-        return np.mean([
+        return -np.mean([
             model_score(training, test, **model) for (training, test), _ in holdouts()
         ])
 
@@ -88,10 +88,10 @@ Keras model optimization using a gaussian process
         cache_dir=".gaussian_process"
     )
     n_calls = 5
-    results = gp.maximize(
+    results = gp.minimize(
         n_calls=n_calls,
         n_random_starts=1,
-        callback=[tqdm_gp(n_calls=n_calls)]
+        callback=[TQDMGaussianProcess(n_calls=n_calls)]
     )
     pprint(gp.best_parameters)
     # {'model': {'structure': {'dense_layers': [{'units': 8, 'activation': 'selu'}, {'units': 16, 'activation': 'relu'}], 'dropout_rate': 0.9281835219195681}, 'fit': {'batch_size': 968}}, 'holdouts': <function holdouts_generator.<locals>.generator at 0x1a336286a8>}

@@ -16,7 +16,7 @@ class GaussianProcess:
             cache_dir:str=".gaussian_process", directory where to store cache.
         """
         self._space = space
-        self._score = self._decorate_score(score)
+        self._score = score
         self._best_parameters = None
         self._best_optimized_parameters = None
         self._cache, self._cache_dir = cache, cache_dir
@@ -37,7 +37,7 @@ class GaussianProcess:
             return pickle.dump(data, f)
 
     def _decorate_score(self, score:Callable)->Callable:
-        @use_named_args(self._space)
+        @use_named_args(self._space.space)
         def wrapper(**kwargs:Dict):
             params = self._space.inflate(kwargs)
             if self._cache:
@@ -65,15 +65,11 @@ class GaussianProcess:
 
     def minimize(self, **kwargs):
         """Minimize the function score."""
-        results = gp_minimize(self._score, self._space, **kwargs)
+        self._space.rasterize()
+        results = gp_minimize(self._decorate_score(self._score), self._space.space, **kwargs)
         self._best_parameters = self._space.inflate_results(results)
         self._best_optimized_parameters = self._space.inflate_results_only(results)
         return results
-
-    def maximize(self, **kwargs):
-        """Minimize the maximize score."""
-        self._score = self._negate(self._score)
-        return self.minimize(**kwargs)
 
     def clear_cache(self):
         if os.path.exists(self._cache_dir):

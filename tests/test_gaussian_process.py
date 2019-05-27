@@ -34,7 +34,7 @@ def model_score(train:np.ndarray, test:np.ndarray, structure:Dict, fit:Dict):
 
 
 def score(holdouts:Callable, model:Dict):
-    return np.mean([
+    return -np.mean([
         model_score(training, test, **model) for (training, test), _ in holdouts()
     ])
 
@@ -65,13 +65,13 @@ def test_gaussian_process():
     set_seed(42)
     gp = GaussianProcess(score, space)
     n_calls = 3
-    results = gp.maximize(
+    results = gp.minimize(
         n_calls=n_calls,
         n_random_starts=1,
         callback=[TQDMGaussianProcess(n_calls=n_calls)],
         random_state=42
     )
-    results = gp.maximize(
+    results = gp.minimize(
         n_calls=n_calls,
         n_random_starts=1,
         callback=[TQDMGaussianProcess(n_calls=n_calls)],
