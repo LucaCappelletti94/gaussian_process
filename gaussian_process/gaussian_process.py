@@ -50,11 +50,6 @@ class GaussianProcess:
             return value
         return wrapper
 
-    def _negate(self, func:Callable)->Callable:
-        def wrapper(*args, **kwargs):
-            return -func(*args, **kwargs)
-        return wrapper
-
     @property
     def best_parameters(self):
         return self._best_parameters
