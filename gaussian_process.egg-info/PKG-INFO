@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: gaussian-process
-Version: 0.0.1
+Version: 0.0.3
 Summary: Simple python package to generate and cache holdouts with arbitrary depth.
 Home-page: https://github.com/LucaCappelletti94/gaussian_process
 Author: Luca Cappelletti
@@ -33,7 +33,7 @@ Description: Gaussian Process
             from typing import List, Callable, Dict
             import numpy as np
             from holdouts_generator import holdouts_generator, random_holdouts
-            from gaussian_process import tqdm_gp, Space, GaussianProcess
+            from gaussian_process import TQDMGaussianProcess, Space, GaussianProcess
             from pprint import pprint
         
         
@@ -61,7 +61,7 @@ Description: Gaussian Process
         
         
             def score(holdouts:Callable, model:Dict):
-                return np.mean([
+                return -np.mean([
                     model_score(training, test, **model) for (training, test), _ in holdouts()
                 ])
         
@@ -96,10 +96,10 @@ Description: Gaussian Process
                 cache_dir=".gaussian_process"
             )
             n_calls = 5
-            results = gp.maximize(
+            results = gp.minimize(
                 n_calls=n_calls,
                 n_random_starts=1,
-                callback=[tqdm_gp(n_calls=n_calls)]
+                callback=[TQDMGaussianProcess(n_calls=n_calls)]
             )
             pprint(gp.best_parameters)
             # {'model': {'structure': {'dense_layers': [{'units': 8, 'activation': 'selu'}, {'units': 16, 'activation': 'relu'}], 'dropout_rate': 0.9281835219195681}, 'fit': {'batch_size': 968}}, 'holdouts': <function holdouts_generator.<locals>.generator at 0x1a336286a8>}
