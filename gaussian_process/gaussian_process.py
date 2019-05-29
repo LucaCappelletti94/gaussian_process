@@ -1,7 +1,7 @@
 from typing import List, Callable, Dict
 import os
 import shutil
-import pickle
+import json
 from skopt import gp_minimize
 from skopt.utils import use_named_args
 from skopt.callbacks import DeltaYStopper
@@ -22,19 +22,19 @@ class GaussianProcess:
         self._cache, self._cache_dir = cache, cache_dir
 
     def _params_to_cache_path(self, params:Dict):
-        return "{cache_dir}/{hash}.pickle".format(
+        return "{cache_dir}/{hash}.json".format(
             cache_dir=self._cache_dir,
             hash=hash(str(params))
         )
 
     def _load_cached_score(self, path:str)->float:
-        with open(path, "rb") as f:
-            return pickle.load(f)["score"]
+        with open(path, "r") as f:
+            return json.load(f)["score"]
 
     def _store_cached_score(self, path:str, data:Dict):
         os.makedirs(self._cache_dir, exist_ok=True)
-        with open(path, "wb") as f:
-            return pickle.dump(data, f)
+        with open(path, "w") as f:
+            return json.dump(data, f, indent=4)
 
     def _decorate_score(self, score:Callable)->Callable:
         @use_named_args(self._space.space)
@@ -46,7 +46,10 @@ class GaussianProcess:
                     return self._load_cached_score(path)
             value = score(**params)
             if self._cache:
-                self._store_cached_score(path, {"score":value})
+                self._store_cached_score(path, {
+                    "score":value,
+                    "parameters":params
+                })
             return value
         return wrapper
 

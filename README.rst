@@ -22,54 +22,62 @@ Keras model optimization using a gaussian process
     from keras.layers import Dense, Dropout
     from keras.datasets import boston_housing
     from extra_keras_utils import set_seed
-    from typing import List, Callable, Dict
+    from typing import Callable, Dict
     import numpy as np
     from holdouts_generator import holdouts_generator, random_holdouts
     from gaussian_process import TQDMGaussianProcess, Space, GaussianProcess
-    from pprint import pprint
 
 
-    def mlp(dense_layers:Dict, dropout_rate:float)->Sequential:
-        return Sequential([
-            *[Dense(**kwargs) for kwargs in dense_layers],
-            Dropout(dropout_rate),
-            Dense(1, activation="relu"),
-        ])
+    class MLP:
+        def __init__(self, holdouts:Callable):
+            self._holdouts = holdouts
+        
+        def mlp(self, dense_layers:Dict, dropout_rate:float)->Sequential:
+            return Sequential([
+                *[Dense(**kwargs) for kwargs in dense_layers],
+                Dropout(dropout_rate),
+                Dense(1, activation="relu"),
+            ])
 
-    def model_score(train:np.ndarray, test:np.ndarray, structure:Dict, fit:Dict):
-        model = mlp(**structure)
-        model.compile(
-            optimizer="nadam",
-            loss="mse"
-        )
+        def model_score(self, train:np.ndarray, test:np.ndarray, structure:Dict, fit:Dict):
+            model = self.mlp(**structure)
+            model.compile(
+                optimizer="nadam",
+                loss="mse"
+            )
 
-        return model.fit(
-            *train,
-            epochs=1,
-            validation_data=test,
-            verbose=0,
-            **fit
-        ).history["val_loss"][-1]
+            return model.fit(
+                *train,
+                epochs=1,
+                validation_data=test,
+                verbose=0,
+                **fit
+            ).history["val_loss"][-1]
 
 
-    def score(holdouts:Callable, model:Dict):
-        return -np.mean([
-            model_score(training, test, **model) for (training, test), _ in holdouts()
-        ])
+        def score(self, structure:Dict, fit:Dict):
+            return -np.mean([
+                self.model_score(training, test, structure, fit) for (training, test), _ in self._holdouts()
+            ])
 
-    space = Space({
-        "holdouts": holdouts_generator(
+    if __name__ == "__main__":
+        set_seed(42)
+
+        generator = holdouts_generator(
             *boston_housing.load_data()[0],
             holdouts=random_holdouts([0.1], [2])
-        ),
-        "model": {
+        )
+
+        mlp = MLP(generator)
+
+        space = Space({
             "structure":{
                 "dense_layers":[{
                     "units":(8,16,32),
                     "activation":("relu", "selu")
                 },
                 {
-                    "units":(8,16,32),
+                    "units":[8,16,32],
                     "activation":("relu", "selu")
                 }],
                 "dropout_rate":[0.0,1.0]
@@ -77,27 +85,26 @@ Keras model optimization using a gaussian process
             "fit":{
                 "batch_size":[100,1000]
             }
-        }
-    })
+        })
 
-    set_seed(42)
-    gp = GaussianProcess(
-        score,
-        space,
-        cache=True,
-        cache_dir=".gaussian_process"
-    )
-    n_calls = 5
-    results = gp.minimize(
-        n_calls=n_calls,
-        n_random_starts=1,
-        callback=[TQDMGaussianProcess(n_calls=n_calls)]
-    )
-    pprint(gp.best_parameters)
-    # {'model': {'structure': {'dense_layers': [{'units': 8, 'activation': 'selu'}, {'units': 16, 'activation': 'relu'}], 'dropout_rate': 0.9281835219195681}, 'fit': {'batch_size': 968}}, 'holdouts': <function holdouts_generator.<locals>.generator at 0x1a336286a8>}
-    pprint(gp.best_optimized_parameters)
-    # {'model': {'structure': {'dense_layers': [{'units': 8, 'activation': 'selu'}, {'units': 16, 'activation': 'relu'}], 'dropout_rate': 0.9281835219195681}, 'fit': {'batch_size': 968}}}
-    gp.clear_cache()
+        gp = GaussianProcess(mlp.score, space)
+        
+        n_calls = 3
+        results = gp.minimize(
+            n_calls=n_calls,
+            n_random_starts=1,
+            callback=[TQDMGaussianProcess(n_calls=n_calls)],
+            random_state=42
+        )
+        results = gp.minimize(
+            n_calls=n_calls,
+            n_random_starts=1,
+            callback=[TQDMGaussianProcess(n_calls=n_calls)],
+            random_state=42
+        )
+        print(gp.best_parameters)
+        print(gp.best_optimized_parameters)
+        gp.clear_cache()
 
 
 .. |travis| image:: https://travis-ci.org/LucaCappelletti94/gaussian_process.png

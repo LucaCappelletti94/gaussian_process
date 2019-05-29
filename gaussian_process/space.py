@@ -59,16 +59,21 @@ class Space(OrderedDict):
     def space(self)->List:
         return self._space
 
-    def _sanitize(self, array):
+    def _sanitize_array(self, array):
         return [
             np.asscalar(a) if isinstance(a, np.generic) else a for a in array
         ]
 
+    def _sanitize_dictionary(self, dictionary):
+        return dict([
+            (k, np.asscalar(v)) if isinstance(v, np.generic) else (k,v) for k,v in dictionary.items()
+        ])
+
     def inflate(self, deflated_space:Dict)->Dict:
-        return inflate({**deflated_space, **self._fixed}, sep=self._sep)
+        return inflate(self._sanitize_dictionary({**deflated_space, **self._fixed}), sep=self._sep)
 
     def inflate_results(self, results:"OptimizeResult")->Dict:
-        return self.inflate(dict(zip(self._names, self._sanitize(results.x))))
+        return self.inflate(dict(zip(self._names, self._sanitize_array(results.x))))
 
     def inflate_results_only(self, results:"OptimizeResult")->Dict:
-        return inflate(dict(zip(self._names, self._sanitize(results.x))), sep=self._sep)
+        return inflate(dict(zip(self._names, self._sanitize_array(results.x))), sep=self._sep)

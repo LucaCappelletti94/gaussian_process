@@ -3,47 +3,55 @@ from keras.models import Sequential
 from keras.layers import Dense, Dropout
 from keras.datasets import boston_housing
 from extra_keras_utils import set_seed
-from typing import List, Callable, Dict
+from typing import Callable, Dict
 import numpy as np
 from holdouts_generator import holdouts_generator, random_holdouts
 from gaussian_process import TQDMGaussianProcess, Space, GaussianProcess
-from pprint import pprint
 
 
-def mlp(dense_layers:Dict, dropout_rate:float)->Sequential:
-    return Sequential([
-        *[Dense(**kwargs) for kwargs in dense_layers],
-        Dropout(dropout_rate),
-        Dense(1, activation="relu"),
-    ])
+class MLP:
+    def __init__(self, holdouts:Callable):
+        self._holdouts = holdouts
+    
+    def mlp(self, dense_layers:Dict, dropout_rate:float)->Sequential:
+        return Sequential([
+            *[Dense(**kwargs) for kwargs in dense_layers],
+            Dropout(dropout_rate),
+            Dense(1, activation="relu"),
+        ])
 
-def model_score(train:np.ndarray, test:np.ndarray, structure:Dict, fit:Dict):
-    model = mlp(**structure)
-    model.compile(
-        optimizer="nadam",
-        loss="mse"
-    )
+    def model_score(self, train:np.ndarray, test:np.ndarray, structure:Dict, fit:Dict):
+        model = self.mlp(**structure)
+        model.compile(
+            optimizer="nadam",
+            loss="mse"
+        )
 
-    return model.fit(
-        *train,
-        epochs=1,
-        validation_data=test,
-        verbose=0,
-        **fit
-    ).history["val_loss"][-1]
+        return model.fit(
+            *train,
+            epochs=1,
+            validation_data=test,
+            verbose=0,
+            **fit
+        ).history["val_loss"][-1]
 
 
-def score(holdouts:Callable, model:Dict):
-    return -np.mean([
-        model_score(training, test, **model) for (training, test), _ in holdouts()
-    ])
+    def score(self, structure:Dict, fit:Dict):
+        return -np.mean([
+            self.model_score(training, test, structure, fit) for (training, test), _ in self._holdouts()
+        ])
 
-space = Space({
-    "holdouts": holdouts_generator(
+def test_gaussian_process():
+    set_seed(42)
+
+    generator = holdouts_generator(
         *boston_housing.load_data()[0],
         holdouts=random_holdouts([0.1], [2])
-    ),
-    "model": {
+    )
+
+    mlp = MLP(generator)
+
+    space = Space({
         "structure":{
             "dense_layers":[{
                 "units":(8,16,32),
@@ -58,12 +66,10 @@ space = Space({
         "fit":{
             "batch_size":[100,1000]
         }
-    }
-})
+    })
 
-def test_gaussian_process():
-    set_seed(42)
-    gp = GaussianProcess(score, space)
+    gp = GaussianProcess(mlp.score, space)
+    
     n_calls = 3
     results = gp.minimize(
         n_calls=n_calls,
