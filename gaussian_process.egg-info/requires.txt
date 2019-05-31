@@ -3,6 +3,7 @@ auto_tqdm
 pandas
 scikit-optimize
 deflate_dict
+dict_hash
 
 [test]
 pytest
