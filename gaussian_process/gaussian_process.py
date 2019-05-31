@@ -22,7 +22,7 @@ class GaussianProcess:
         self._cache, self._cache_dir = cache, cache_dir
 
     def _params_to_cache_path(self, params:Dict):
-        return "{cache_dir}/{hash}.json".format(
+        return "{cache_dir}/gp{hash}.json".format(
             cache_dir=self._cache_dir,
             hash=hash(json.dumps(params, sort_keys=True))
         )
