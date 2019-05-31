@@ -6,6 +6,7 @@ from skopt import gp_minimize
 from skopt.utils import use_named_args
 from skopt.callbacks import DeltaYStopper
 from .space import Space
+from dict_hash import sha256
 
 class GaussianProcess:
     def __init__(self, score:Callable, space:Space, cache:bool=True, cache_dir:str=".gaussian_process"):
@@ -24,7 +25,7 @@ class GaussianProcess:
     def _params_to_cache_path(self, params:Dict):
         return "{cache_dir}/gp{hash}.json".format(
             cache_dir=self._cache_dir,
-            hash=hash(json.dumps(params, sort_keys=True))
+            hash=sha256(params)
         )
 
     def _load_cached_score(self, path:str)->float:
@@ -64,7 +65,6 @@ class GaussianProcess:
     def minimize(self, random_state:int, **kwargs):
         """Minimize the function score."""
         self._space.rasterize()
-        os.environ['PYTHONHASHSEED']=str(random_state)
         results = gp_minimize(self._decorate_score(self._score), self._space.space, random_state=random_state, **kwargs)
         self._best_parameters = self._space.inflate_results(results)
         self._best_optimized_parameters = self._space.inflate_results_only(results)
