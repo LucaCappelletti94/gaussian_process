@@ -59,7 +59,7 @@ def test_gaussian_process():
             },
             {
                 "units":5,
-                "activation":("relu", "selu")
+                "activation":["relu", "selu"]
             }],
             "dropout_rate":[0.0,1.0]
         },
