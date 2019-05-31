@@ -24,7 +24,7 @@ class GaussianProcess:
     def _params_to_cache_path(self, params:Dict):
         return "{cache_dir}/{hash}.json".format(
             cache_dir=self._cache_dir,
-            hash=hash(str(params))
+            hash=hash(json.dumps(params, sort_keys=True))
         )
 
     def _load_cached_score(self, path:str)->float:
@@ -34,7 +34,7 @@ class GaussianProcess:
     def _store_cached_score(self, path:str, data:Dict):
         os.makedirs(self._cache_dir, exist_ok=True)
         with open(path, "w") as f:
-            return json.dump(data, f, indent=4)
+            return json.dump(data, f, indent=4, sort_keys=True)
 
     def _decorate_score(self, score:Callable)->Callable:
         @use_named_args(self._space.space)
@@ -61,10 +61,11 @@ class GaussianProcess:
     def best_optimized_parameters(self):
         return self._best_optimized_parameters
 
-    def minimize(self, **kwargs):
+    def minimize(self, random_state:int, **kwargs):
         """Minimize the function score."""
         self._space.rasterize()
-        results = gp_minimize(self._decorate_score(self._score), self._space.space, **kwargs)
+        os.environ['PYTHONHASHSEED']=str(random_state)
+        results = gp_minimize(self._decorate_score(self._score), self._space.space, random_state=random_state, **kwargs)
         self._best_parameters = self._space.inflate_results(results)
         self._best_optimized_parameters = self._space.inflate_results_only(results)
         return results
