@@ -25,7 +25,8 @@ class Space(OrderedDict):
         self._space.append(Integer(low=low, high=high, name=name))
         self._names.append(name)
 
-    def _is_categorical(self, value)->bool:
+    @classmethod
+    def _is_categorical(cls, value)->bool:
         return not (isinstance(value, list) and len(value)==2 and all([
             isinstance(v, (float, int)) for v in value
         ]))
@@ -33,7 +34,8 @@ class Space(OrderedDict):
     def _is_real(self, values)->bool:
         return all([isinstance(v, float) for v in values])
 
-    def _to_tuple(self, value)->bool:
+    @classmethod
+    def _to_tuple(cls, value)->bool:
         if isinstance(value, tuple):
             return value
         if isinstance(value, list):
@@ -59,12 +61,14 @@ class Space(OrderedDict):
     def space(self)->List:
         return self._space
 
-    def _sanitize_array(self, array):
+    @classmethod
+    def _sanitize_array(cls, array):
         return [
             np.asscalar(a) if isinstance(a, np.generic) else a for a in array
         ]
 
-    def _sanitize_dictionary(self, dictionary):
+    @classmethod
+    def _sanitize_dictionary(cls, dictionary):
         return dict([
             (k, np.asscalar(v)) if isinstance(v, np.generic) else (k,v) for k,v in dictionary.items()
         ])
