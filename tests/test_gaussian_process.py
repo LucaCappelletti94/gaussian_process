@@ -1,19 +1,21 @@
-from typing import Callable, Dict, List
+from typing import Callable, List
 import numpy as np
 from gaussian_process import TQDMGaussianProcess, Space, GaussianProcess
 from multiprocessing import cpu_count
 
-def score(x:List, y:List):
+
+def score(x: List, y: List):
     return -(np.sum(np.cos(x)) + np.sum(np.sin(y)))
+
 
 def test_gaussian_process():
     space = Space({
-        "x":[[-1.0, 1.0] for _ in range(2)],
-        "y":[[0.0, 3.0] for _ in range(2)]
+        "x": [[-1.0, 1.0] for _ in range(2)],
+        "y": [[0.0, 3.0] for _ in range(2)]
     })
 
     gp = GaussianProcess(score, space)
-    
+
     n_calls = 50
     results = gp.minimize(
         n_calls=n_calls,

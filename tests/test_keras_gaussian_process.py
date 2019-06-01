@@ -13,7 +13,8 @@ class MLP:
     def __init__(self, holdouts:Callable):
         self._holdouts = holdouts
     
-    def mlp(self, dense_layers:Dict, dropout_rate:float)->Sequential:
+    @classmethod
+    def mlp(cls, dense_layers:Dict, dropout_rate:float)->Sequential:
         return Sequential([
             *[Dense(**kwargs) for kwargs in dense_layers],
             Dropout(dropout_rate),
@@ -71,18 +72,18 @@ def test_keras_gaussian_process():
     gp = GaussianProcess(mlp.score, space)
     
     n_calls = 3
-    results = gp.minimize(
+    gp.minimize(
         n_calls=n_calls,
         n_random_starts=1,
         callback=[TQDMGaussianProcess(n_calls=n_calls)],
         random_state=42
     )
-    results = gp.minimize(
+    gp.minimize(
         n_calls=n_calls,
         n_random_starts=1,
         callback=[TQDMGaussianProcess(n_calls=n_calls)],
         random_state=42
     )
-    print(gp.best_parameters)
-    print(gp.best_optimized_parameters)
+    gp.best_parameters
+    gp.best_optimized_parameters
     gp.clear_cache()
