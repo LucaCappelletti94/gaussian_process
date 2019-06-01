@@ -1,4 +1,4 @@
-from typing import Callable, List
+from typing import List
 import numpy as np
 from gaussian_process import TQDMGaussianProcess, Space, GaussianProcess
 from multiprocessing import cpu_count

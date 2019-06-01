@@ -1,10 +1,9 @@
-from typing import List, Callable, Dict
+from typing import Callable, Dict
 import os
 import shutil
 import json
 from skopt import gp_minimize
 from skopt.utils import use_named_args
-from skopt.callbacks import DeltaYStopper
 from .space import Space
 from dict_hash import sha256
 
@@ -28,7 +27,8 @@ class GaussianProcess:
             hash=sha256(params)
         )
 
-    def _load_cached_score(self, path:str)->float:
+    @classmethod
+    def _load_cached_score(cls, path:str)->float:
         with open(path, "r") as f:
             return json.load(f)["score"]
 

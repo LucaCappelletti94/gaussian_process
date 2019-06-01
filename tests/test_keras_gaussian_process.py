@@ -10,18 +10,18 @@ from gaussian_process import TQDMGaussianProcess, Space, GaussianProcess
 
 
 class MLP:
-    def __init__(self, holdouts:Callable):
+    def __init__(self, holdouts: Callable):
         self._holdouts = holdouts
-    
+
     @classmethod
-    def mlp(cls, dense_layers:Dict, dropout_rate:float)->Sequential:
+    def mlp(cls, dense_layers: Dict, dropout_rate: float)->Sequential:
         return Sequential([
             *[Dense(**kwargs) for kwargs in dense_layers],
             Dropout(dropout_rate),
             Dense(1, activation="relu"),
         ])
 
-    def model_score(self, train:np.ndarray, test:np.ndarray, structure:Dict, fit:Dict):
+    def model_score(self, train: np.ndarray, test: np.ndarray, structure: Dict, fit: Dict):
         model = self.mlp(**structure)
         model.compile(
             optimizer="nadam",
@@ -36,11 +36,11 @@ class MLP:
             **fit
         ).history["val_loss"][-1]
 
-
-    def score(self, structure:Dict, fit:Dict):
+    def score(self, structure: Dict, fit: Dict):
         return -np.mean([
             self.model_score(training, test, structure, fit) for (training, test), _ in self._holdouts()
         ])
+
 
 def test_keras_gaussian_process():
     set_seed(42)
@@ -53,24 +53,24 @@ def test_keras_gaussian_process():
     mlp = MLP(generator)
 
     space = Space({
-        "structure":{
-            "dense_layers":[{
-                "units":(8,16,32),
-                "activation":("relu", "selu")
+        "structure": {
+            "dense_layers": [{
+                "units": (8, 16, 32),
+                "activation": ("relu", "selu")
             },
-            {
-                "units":5,
-                "activation":["relu", "selu"]
+                {
+                "units": 5,
+                "activation": ["relu", "selu"]
             }],
-            "dropout_rate":[0.0,1.0]
+            "dropout_rate": [0.0, 1.0]
         },
-        "fit":{
-            "batch_size":[100,1000]
+        "fit": {
+            "batch_size": [100, 1000]
         }
     })
 
     gp = GaussianProcess(mlp.score, space)
-    
+
     n_calls = 3
     gp.minimize(
         n_calls=n_calls,
@@ -84,6 +84,6 @@ def test_keras_gaussian_process():
         callback=[TQDMGaussianProcess(n_calls=n_calls)],
         random_state=42
     )
-    gp.best_parameters
-    gp.best_optimized_parameters
+    print(gp.best_parameters)
+    print(gp.best_optimized_parameters)
     gp.clear_cache()

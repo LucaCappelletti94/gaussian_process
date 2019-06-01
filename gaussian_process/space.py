@@ -31,7 +31,8 @@ class Space(OrderedDict):
             isinstance(v, (float, int)) for v in value
         ]))
 
-    def _is_real(self, values)->bool:
+    @classmethod
+    def _is_real(cls, values)->bool:
         return all([isinstance(v, float) for v in values])
 
     @classmethod
