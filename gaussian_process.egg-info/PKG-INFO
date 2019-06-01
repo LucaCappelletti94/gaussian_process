@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: gaussian-process
-Version: 0.0.8
+Version: 0.0.9
 Summary: Simple python package to generate and cache holdouts with arbitrary depth.
 Home-page: https://github.com/LucaCappelletti94/gaussian_process
 Author: Luca Cappelletti
