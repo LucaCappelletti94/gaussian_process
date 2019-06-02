@@ -10,6 +10,7 @@ pytest
 pytest-cov
 coveralls
 validate_version_code
+codacy-coverage
 keras
 silence_tensorflow
 extra_keras_utils
