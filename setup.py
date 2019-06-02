@@ -30,7 +30,7 @@ def find_version(*file_paths):
 
 __version__ = find_version("gaussian_process", "__version__.py")
 
-test_deps = ['pytest', 'pytest-cov', 'coveralls', 'validate_version_code', 'codacy-coverage']
+test_deps = ['pytest', 'pytest-cov', 'coveralls', 'validate_version_code', 'codacy-coverage',  'keras', 'silence_tensorflow', 'extra_keras_utils', 'numpy', 'holdouts_generator']
 
 extras = {
     'test': test_deps,
@@ -39,7 +39,7 @@ extras = {
 setup(
     name='gaussian_process',
     version=__version__,
-    description="Wrapper for `"sklearn.gp_minimize"` for a simpler parameter specification using nested dictionaries.",
+    description="Wrapper for sklearn.gp_minimize for a simpler parameter specification using nested dictionaries.",
     long_description=long_description,
     url="https://github.com/LucaCappelletti94/gaussian_process",
     author="Luca Cappelletti",
@@ -55,7 +55,7 @@ setup(
     packages=find_packages(exclude=['contrib', 'docs', 'tests*']),
     tests_require=test_deps,
     install_requires=[
-        # Add here the package dependencies
+        "sklearn", "auto_tqdm", "pandas", "scikit-optimize", "deflate_dict", "dict_hash"
     ],
     extras_require=extras,
 )
