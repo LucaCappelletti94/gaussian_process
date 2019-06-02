@@ -1,5 +1,9 @@
 \.vscode/
+
 \.DS_Store
-*/__pycache__/*
-**/__pycache__/*
+
 \.coverage*
+*/__pycache__/*
+
+.notipy.json
+**/__pycache__/*
