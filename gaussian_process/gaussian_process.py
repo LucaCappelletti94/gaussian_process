@@ -7,7 +7,6 @@ from skopt.utils import use_named_args
 from .space import Space
 from dict_hash import sha256
 
-
 class GaussianProcess:
     def __init__(self, score: Callable, space: Space, cache: bool = True, cache_dir: str = ".gaussian_process"):
         """Create a new gaussian process-optimized neural network wrapper
@@ -37,6 +36,7 @@ class GaussianProcess:
         os.makedirs(self._cache_dir, exist_ok=True)
         with open(path, "w") as f:
             return json.dump(data, f, indent=4, sort_keys=True)
+
 
     def _decorate_score(self, score: Callable)->Callable:
         @use_named_args(self._space.space)
