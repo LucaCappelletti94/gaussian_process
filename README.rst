@@ -132,12 +132,12 @@ Keras model optimization using a gaussian process
     :target: https://coveralls.io/github/LucaCappelletti94/gaussian_process?branch=master
     :alt: Coveralls Coverage
 
-.. |pip| image:: https://badge.fury.io/py/gaussian_process.svg
-    :target: https://badge.fury.io/py/gaussian_process
+.. |pip| image:: https://badge.fury.io/py/gaussian-process.svg
+    :target: https://badge.fury.io/py/gaussian-process
     :alt: Pypi project
 
-.. |downloads| image:: https://pepy.tech/badge/gaussian_process
-    :target: https://pepy.tech/badge/gaussian_process
+.. |downloads| image:: https://pepy.tech/badge/gaussian-process
+    :target: https://pepy.tech/badge/gaussian-process
     :alt: Pypi total project downloads 
 
 .. |codacy|  image:: https://api.codacy.com/project/badge/Grade/0a674ed703f44793a27936462ca05080

@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: gaussian-process
-Version: 0.0.10
+Version: 0.0.11
 Summary: Wrapper for sklearn.gp_minimize for a simpler parameter specification using nested dictionaries.
 Home-page: https://github.com/LucaCappelletti94/gaussian_process
 Author: Luca Cappelletti
@@ -140,12 +140,12 @@ Description: gaussian_process
             :target: https://coveralls.io/github/LucaCappelletti94/gaussian_process?branch=master
             :alt: Coveralls Coverage
         
-        .. |pip| image:: https://badge.fury.io/py/gaussian_process.svg
-            :target: https://badge.fury.io/py/gaussian_process
+        .. |pip| image:: https://badge.fury.io/py/gaussian-process.svg
+            :target: https://badge.fury.io/py/gaussian-process
             :alt: Pypi project
         
-        .. |downloads| image:: https://pepy.tech/badge/gaussian_process
-            :target: https://pepy.tech/badge/gaussian_process
+        .. |downloads| image:: https://pepy.tech/badge/gaussian-process
+            :target: https://pepy.tech/badge/gaussian-process
             :alt: Pypi total project downloads 
         
         .. |codacy|  image:: https://api.codacy.com/project/badge/Grade/0a674ed703f44793a27936462ca05080
