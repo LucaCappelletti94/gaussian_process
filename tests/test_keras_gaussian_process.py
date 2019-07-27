@@ -38,7 +38,7 @@ class MLP:
 
     def score(self, structure: Dict, fit: Dict):
         return -np.mean([
-            self.model_score(training, test, structure, fit) for (training, test), _ in self._holdouts()
+            self.model_score(training, test, structure, fit) for (training, test), _, _ in self._holdouts()
         ])
 
 
