@@ -1,6 +1,7 @@
 gaussian_process
 =========================================================================================
-|travis| |sonar_quality| |sonar_maintainability| |codacy| |code_climate_maintainability| |pip| |downloads|
+|travis| |sonar_quality| |sonar_maintainability| |codacy|
+|code_climate_maintainability| |pip| |downloads|
 
 Wrapper for `"sklearn.gp_minimize"` for a simpler parameter specification using nested dictionaries.
 
@@ -20,6 +21,8 @@ Since some software handling coverages sometime get slightly different results, 
 
 Keras model optimization using a gaussian process
 -------------------------------------------------------------
+The following example show a complete usage of GaussianProcess
+for tuning the parameters of a Keras model.
 
 .. code:: python
 
@@ -140,7 +143,7 @@ Keras model optimization using a gaussian process
     :target: https://pepy.tech/badge/gaussian-process
     :alt: Pypi total project downloads 
 
-.. |codacy|  image:: https://api.codacy.com/project/badge/Grade/0a674ed703f44793a27936462ca05080
+.. |codacy| image:: https://api.codacy.com/project/badge/Grade/0a674ed703f44793a27936462ca05080
     :target: https://www.codacy.com/app/LucaCappelletti94/gaussian_process?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=LucaCappelletti94/gaussian_process&amp;utm_campaign=Badge_Grade
     :alt: Codacy Maintainability
 

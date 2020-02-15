@@ -1,4 +1,4 @@
-from auto_tqdm import tqdm
+from tqdm.auto import tqdm
 
 
 class TQDMGaussianProcess(object):
