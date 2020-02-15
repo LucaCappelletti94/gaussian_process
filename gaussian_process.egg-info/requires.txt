@@ -1,5 +1,5 @@
 sklearn
-auto_tqdm
+tqdm
 pandas
 scikit-optimize
 deflate_dict
@@ -13,6 +13,5 @@ validate_version_code
 codacy-coverage
 keras
 silence_tensorflow
-extra_keras_utils
 numpy
 holdouts_generator
