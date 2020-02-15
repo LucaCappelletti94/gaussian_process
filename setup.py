@@ -55,7 +55,7 @@ setup(
     packages=find_packages(exclude=['contrib', 'docs', 'tests*']),
     tests_require=test_deps,
     install_requires=[
-        "sklearn", "tqdm", "pandas", "scikit-optimize", "deflate_dict>=1.0.3", "dict_hash"
+        "sklearn", "tqdm", "pandas", "scikit-optimize", "deflate_dict>=1.0.4", "dict_hash"
     ],
     extras_require=extras,
 )

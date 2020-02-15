@@ -76,7 +76,7 @@ class Space(OrderedDict):
         ])
 
     def inflate(self, deflated_space: Dict)->Dict:
-        return inflate(self._sanitize_dictionary({**deflated_space, **self._fixed}), sep=self._sep)
+        return inflate(self._sanitize_dictionary({**deflated_space, **self._fixed}), sep=self._sep, leave_tuples=True)
 
     def inflate_results(self, results: "OptimizeResult")->Dict:
         return self.inflate(dict(zip(self._names, self._sanitize_array(results.x))))

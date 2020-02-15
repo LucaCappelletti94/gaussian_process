@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: gaussian-process
-Version: 0.0.13
+Version: 0.0.14
 Summary: Wrapper for sklearn.gp_minimize for a simpler parameter specification using nested dictionaries.
 Home-page: https://github.com/LucaCappelletti94/gaussian_process
 Author: Luca Cappelletti
