@@ -30,7 +30,7 @@ def find_version(*file_paths):
 
 __version__ = find_version("gaussian_process", "__version__.py")
 
-test_deps = ['pytest', 'pytest-cov', 'coveralls', 'validate_version_code', 'codacy-coverage',  'keras', 'silence_tensorflow', 'extra_keras_utils', 'numpy', 'holdouts_generator']
+test_deps = ['pytest', 'pytest-cov', 'coveralls', 'validate_version_code', 'codacy-coverage',  'keras', 'silence_tensorflow', 'numpy', 'holdouts_generator']
 
 extras = {
     'test': test_deps,

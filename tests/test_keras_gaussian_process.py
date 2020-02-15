@@ -2,8 +2,8 @@ import silence_tensorflow
 from keras.models import Sequential
 from keras.layers import Dense, Dropout
 from keras.datasets import boston_housing
-from extra_keras_utils import set_seed
 from typing import Callable, Dict
+from skopt.callbacks import DeltaYStopper
 import numpy as np
 from holdouts_generator import holdouts_generator, random_holdouts
 from gaussian_process import TQDMGaussianProcess, Space, GaussianProcess
@@ -38,13 +38,11 @@ class MLP:
 
     def score(self, structure: Dict, fit: Dict):
         return -np.mean([
-            self.model_score(training, test, structure, fit) for (training, test), _, _ in self._holdouts()
+            self.model_score(training, test, structure, fit) for (training, test), _ in self._holdouts()
         ])
 
 
 def test_keras_gaussian_process():
-    set_seed(42)
-
     generator = holdouts_generator(
         *boston_housing.load_data()[0],
         holdouts=random_holdouts([0.1], [2])
@@ -75,7 +73,10 @@ def test_keras_gaussian_process():
     gp.minimize(
         n_calls=n_calls,
         n_random_starts=1,
-        callback=[TQDMGaussianProcess(n_calls=n_calls)],
+        callback=[
+            TQDMGaussianProcess(n_calls=n_calls),
+            DeltaYStopper(0.1)
+        ],
         random_state=42
     )
     gp.minimize(

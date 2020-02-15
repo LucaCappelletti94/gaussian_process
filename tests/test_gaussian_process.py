@@ -2,6 +2,7 @@ from typing import List
 import numpy as np
 from gaussian_process import TQDMGaussianProcess, Space, GaussianProcess
 from multiprocessing import cpu_count
+from skopt.callbacks import DeltaYStopper
 
 
 def score(x: List, y: List):
@@ -20,7 +21,10 @@ def test_gaussian_process():
     results = gp.minimize(
         n_calls=n_calls,
         n_random_starts=5,
-        callback=[TQDMGaussianProcess(n_calls=n_calls)],
+        callback=[
+            TQDMGaussianProcess(n_calls=n_calls),
+            DeltaYStopper(0.001)
+        ],
         random_state=42,
         n_jobs=cpu_count()
     )
