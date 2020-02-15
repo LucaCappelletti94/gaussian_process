@@ -2,7 +2,7 @@ sklearn
 tqdm
 pandas
 scikit-optimize
-deflate_dict
+deflate_dict>=1.0.3
 dict_hash
 
 [test]
