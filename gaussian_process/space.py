@@ -56,7 +56,7 @@ class Space(OrderedDict):
         self._names = []
         self._fixed = {}
         self._space = []
-        for name, value in deflate(self, sep=self._sep).items():
+        for name, value in deflate(self, sep=self._sep, leave_tuples=True).items():
             self._parse(name, value)
 
     @property
