@@ -3,7 +3,8 @@
 \.DS_Store
 
 \.coverage*
-*/__pycache__/*
-
 .notipy.json
-**/__pycache__/*
+__pycache__
+.pytest_cache
+.vscode
+*.egg-info
