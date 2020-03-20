@@ -6,73 +6,79 @@ from skopt import gp_minimize
 from skopt.utils import use_named_args
 from .space import Space
 from dict_hash import sha256
+from skopt.callbacks import DeltaYStopper
+from .utils import TQDMGaussianProcess, History
+
 
 class GaussianProcess:
-    def __init__(self, score: Callable, space: Space, cache: bool = True, cache_dir: str = ".gaussian_process"):
+    def __init__(
+        self,
+        score: Callable,
+        space: Space
+    ):
         """Create a new gaussian process-optimized neural network wrapper
-            score:Callable, function returning a score for the give parameters.
-            space:Space, Space with the space to explore and the parameters to pass to the score function.
-            cache:bool=True, whetever to use or not cache.
-            cache_dir:str=".gaussian_process", directory where to store cache.
+
+        Parameters
+        -----------------------------
+        score: Callable,
+            Function representing a loss to minimize or a score to maximize.
+        space: Space,
+            Space with the space to explore and the parameters to pass to the score function.
         """
         self._space = space
         self._score = score
-        self._best_parameters = None
-        self._best_optimized_parameters = None
-        self._cache, self._cache_dir = cache, cache_dir
+        self._maximization_problem = False
 
-    def _params_to_cache_path(self, params: Dict):
-        return "{cache_dir}/gp{hash}.json".format(
-            cache_dir=self._cache_dir,
-            hash=sha256(params)
-        )
-
-    @classmethod
-    def _load_cached_score(cls, path: str)->float:
-        with open(path, "r") as f:
-            return json.load(f)["score"]
-
-    def _store_cached_score(self, path: str, data: Dict):
-        os.makedirs(self._cache_dir, exist_ok=True)
-        with open(path, "w") as f:
-            return json.dump(data, f, indent=4, sort_keys=True)
-
-
-    def _decorate_score(self, score: Callable)->Callable:
+    def _decorate_score(self, score: Callable) -> Callable:
         @use_named_args(self._space.space)
         def wrapper(**kwargs: Dict):
-            params = self._space.inflate(kwargs)
-            if self._cache:
-                path = self._params_to_cache_path(params)
-                if os.path.exists(path):
-                    return self._load_cached_score(path)
-            value = score(**params)
-            if self._cache:
-                self._store_cached_score(path, {
-                    "score": value,
-                    "parameters": params
-                })
-            return value
+            new_score = score(**self._space.inflate(kwargs))
+            if self._maximization_problem:
+                return -new_score
+            return new_score
         return wrapper
 
     @property
     def best_parameters(self):
+        if self._best_parameters is None:
+            raise ValueError("You have not run the Gaussian Process yet!")
         return self._best_parameters
 
-    @property
-    def best_optimized_parameters(self):
-        return self._best_optimized_parameters
-
-    def minimize(self, random_state: int, **kwargs):
+    def _fit(
+        self,
+        n_calls: int = 100,
+        n_random_starts: int = 10,
+        random_state: int = 42,
+        early_stopping_delta: float = 0.001,
+        early_stopping_best_models: int = 5,
+        n_jobs: int = -1
+    ):
         """Minimize the function score."""
         self._space.rasterize()
-        results = gp_minimize(self._decorate_score(
-            self._score), self._space.space, random_state=random_state, **kwargs)
+        history = History(self._space, self._maximization_problem)
+        results = gp_minimize(
+            func=self._decorate_score(self._score),
+            dimensions=self._space.space,
+            n_calls=n_calls,
+            n_random_starts=n_random_starts,
+            n_jobs=n_jobs,
+            callback=[
+                TQDMGaussianProcess(n_calls),
+                history,
+                DeltaYStopper(
+                    early_stopping_delta,
+                    n_best=early_stopping_best_models
+                )
+            ],
+            random_state=random_state
+        )
         self._best_parameters = self._space.inflate_results(results)
-        self._best_optimized_parameters = self._space.inflate_results_only(
-            results)
-        return results
+        return history
 
-    def clear_cache(self):
-        if os.path.exists(self._cache_dir):
-            shutil.rmtree(self._cache_dir)
+    def minimize(self, *args, **kwargs):
+        self._maximization_problem = False
+        return self._fit(*args, **kwargs)
+
+    def maximize(self, *args, **kwargs):
+        self._maximization_problem = True
+        return self._fit(*args, **kwargs)

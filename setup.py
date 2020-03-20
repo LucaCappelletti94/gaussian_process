@@ -30,7 +30,8 @@ def find_version(*file_paths):
 
 __version__ = find_version("gaussian_process", "__version__.py")
 
-test_deps = ['pytest', 'pytest-cov', 'coveralls', 'validate_version_code', 'codacy-coverage',  'keras', 'silence_tensorflow', 'numpy', 'holdouts_generator']
+test_deps = ['pytest', 'pytest-cov', 'coveralls', 'validate_version_code',
+             'codacy-coverage',  'keras', 'silence_tensorflow', 'numpy', 'holdouts_generator']
 
 extras = {
     'test': test_deps,
@@ -55,7 +56,12 @@ setup(
     packages=find_packages(exclude=['contrib', 'docs', 'tests*']),
     tests_require=test_deps,
     install_requires=[
-        "sklearn", "tqdm", "pandas", "scikit-optimize", "deflate_dict>=1.0.4", "dict_hash"
+        "sklearn",
+        "tqdm",
+        "pandas",
+        "scikit-optimize",
+        "deflate_dict>=1.0.4",
+        "dict_hash"
     ],
     extras_require=extras,
 )
