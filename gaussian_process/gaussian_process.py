@@ -48,6 +48,7 @@ class GaussianProcess:
         self,
         n_calls: int = 100,
         n_random_starts: int = 10,
+        n_restarts_optimizer: int = 50,
         random_state: int = 42,
         early_stopping_delta: float = 0.001,
         early_stopping_best_models: int = 5,
@@ -62,6 +63,7 @@ class GaussianProcess:
             n_calls=n_calls,
             n_random_starts=n_random_starts,
             n_jobs=n_jobs,
+            n_restarts_optimizer=n_restarts_optimizer,
             callback=[
                 TQDMGaussianProcess(n_calls),
                 history,
