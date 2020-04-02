@@ -8,6 +8,7 @@ from skopt.callbacks import DeltaYStopper
 def to_maximize(x: List, y: List):
     return np.sum(np.cos(x)) + np.sum(np.sin(y))
 
+
 def to_minimize(x: List, y: List):
     return np.sin(x+y).sum()
 
@@ -18,5 +19,7 @@ def test_gaussian_process():
         "y": [[-3.0, 3.0] for _ in range(2)]
     })
 
-    GaussianProcess(to_maximize, space).maximize().plot(path="history_maximize.png")
-    GaussianProcess(to_minimize, space).minimize().plot(path="history_minimize.png")
+    GaussianProcess(to_maximize, space).maximize().plot(
+        path="history_maximize.png")
+    GaussianProcess(to_minimize, space).minimize().plot(
+        path="history_minimize.png")
