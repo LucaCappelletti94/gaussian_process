@@ -61,7 +61,8 @@ setup(
         "pandas",
         "scikit-optimize",
         "deflate_dict>=1.0.4",
-        "dict_hash"
+        "dict_hash",
+        "plot_keras_history"
     ],
     extras_require=extras,
 )
